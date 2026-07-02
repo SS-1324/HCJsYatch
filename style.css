@@ -1,0 +1,291 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --felt-dark: #0b2a1f;
+  --felt: #123524;
+  --felt-light: #17462f;
+  --cream: #f6f0e2;
+  --cream-dim: #d9d0ba;
+  --ink: #201a12;
+  --gold: #c9a24a;
+  --gold-bright: #e4bf6b;
+  --bot-red: #b1483a;
+  --line: rgba(246, 240, 226, 0.14);
+  --radius: 10px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(ellipse at top, var(--felt-light), var(--felt-dark) 75%);
+  color: var(--cream);
+  font-family: 'Inter', -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+body {
+  padding: clamp(16px, 4vw, 40px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 980px;
+}
+
+/* ---------- 헤더 ---------- */
+header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+h1 {
+  font-family: 'Fraunces', serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: -0.01em;
+  margin: 0 0 6px;
+  color: var(--cream);
+}
+
+h1 .accent { color: var(--gold-bright); font-style: italic; }
+
+.subtitle {
+  color: var(--cream-dim);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- 상태 표시줄 ---------- */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+#round-line {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  color: var(--gold-bright);
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+#status-line {
+  flex: 1;
+  text-align: center;
+  min-width: 200px;
+  color: var(--cream-dim);
+  font-size: 0.92rem;
+}
+
+#reset-btn {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--cream-dim);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+#reset-btn:hover { border-color: var(--gold); color: var(--gold-bright); }
+
+/* ---------- 다이스 영역 ---------- */
+.dice-panel {
+  background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.05));
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px 20px;
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+#dice-area {
+  display: flex;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 18px);
+  margin-bottom: 22px;
+  min-height: 76px;
+}
+
+.die {
+  width: 64px;
+  height: 64px;
+  background: var(--cream);
+  border-radius: 12px;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.25), 0 8px 16px rgba(0,0,0,0.3);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-areas:
+    "p1 p2 p3"
+    "p4 p5 p6"
+    "p7 p8 p9";
+  padding: 10px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  flex-shrink: 0;
+}
+
+.pip {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--ink);
+  justify-self: center;
+  align-self: center;
+}
+
+.die--clickable { cursor: pointer; }
+.die--clickable:hover { transform: translateY(-4px); }
+
+.die--held {
+  background: var(--gold-bright);
+  box-shadow: 0 4px 0 #8a6a24, 0 8px 18px rgba(201, 162, 74, 0.45);
+}
+.die--held .pip { background: var(--ink); }
+
+@keyframes diePulse {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.14) rotate(-3deg); }
+  70% { transform: scale(1.05) rotate(2deg); }
+  100% { transform: scale(1); }
+}
+.die--pulse { animation: diePulse 0.4s ease; }
+
+#roll-btn {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+  color: var(--ink);
+  border: none;
+  padding: 13px 30px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(201, 162, 74, 0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s;
+}
+#roll-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(201, 162, 74, 0.45); }
+#roll-btn:disabled {
+  background: rgba(255,255,255,0.08);
+  color: var(--cream-dim);
+  box-shadow: none;
+  cursor: default;
+  opacity: 0.7;
+}
+
+/* ---------- 점수판 ---------- */
+.boards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+@media (max-width: 640px) {
+  .boards { grid-template-columns: 1fr; }
+}
+
+.board {
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 16px 18px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.board.active-turn {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold), 0 8px 24px rgba(201,162,74,0.15);
+}
+
+.board h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.board.bot h2 { color: #e8a99c; }
+.board.human h2 { color: var(--gold-bright); }
+
+.player-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cream-dim);
+}
+.board.active-turn .player-dot {
+  background: var(--gold-bright);
+  box-shadow: 0 0 8px var(--gold-bright);
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+tbody tr { border-bottom: 1px solid var(--line); }
+tbody td { padding: 6px 4px; }
+.score-cell { text-align: right; font-variant-numeric: tabular-nums; color: var(--cream-dim); }
+tr.used .score-cell { color: var(--cream); font-weight: 600; }
+.score-cell.preview { color: var(--gold-bright); font-weight: 600; }
+.score-cell.empty { opacity: 0.35; }
+
+tr.selectable { cursor: pointer; transition: background 0.12s; }
+tr.selectable:hover { background: rgba(201, 162, 74, 0.14); }
+
+.board-footer {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 0.82rem;
+  color: var(--cream-dim);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.board-footer .total-row {
+  font-family: 'Fraunces', serif;
+  font-size: 1.05rem;
+  color: var(--cream);
+  font-weight: 600;
+  margin-top: 4px;
+}
+.total-val { color: var(--gold-bright); }
+
+/* ---------- 게임 종료 배너 ---------- */
+#game-over-banner {
+  margin-top: 20px;
+  text-align: center;
+  font-family: 'Fraunces', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+  padding: 16px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.hidden { display: none; }
+
+footer {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: rgba(246, 240, 226, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .die, .die--clickable:hover, .die--pulse { animation: none !important; transition: none !important; transform: none !important; }
+}
