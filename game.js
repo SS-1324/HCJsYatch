@@ -1,8 +1,4 @@
-// game.js
-
 "use strict";
-
-import { setupAIEngine, computeValueVectors, decideKeep, decideCategory, positionsToKeep } from './ai_engine.js';
 
 // 0. 기본 규칙 및 상태 변수
 const CATEGORY_KEYS = ["aces", "deuces", "threes", "fours", "fives", "sixes", "choice", "fourKind", "fullHouse", "smallStraight", "largeStraight", "yacht"];
