@@ -3,59 +3,146 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>요트 다이스 — VS AI</title>
+<title>요트 다이스</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <h1>요트 다이스 <span class="accent">VS</span> AI</h1>
-    <div class="subtitle">최적 전략으로 계산된 AI와 12라운드 대결 · 요트는 포카인드/풀하우스에도 기록 가능</div>
-  </header>
 
-  <div class="status-bar">
-    <div id="round-line">라운드 1 / 12</div>
-    <div id="status-line">당신의 차례입니다.</div>
-    <button id="reset-btn">새 게임</button>
-  </div>
+  <div id="view-home" class="view-section">
+    <header class="home-header">
+      <h1>YACHT <span class="accent">DICE</span></h1>
+      <button id="btn-rules-home" class="icon-btn">?</button>
+    </header>
 
-  <div class="dice-panel">
-    <div id="dice-area"></div>
-    <button id="roll-btn">주사위 굴리기 (1/3)</button>
-  </div>
+    <div class="player-input-area">
+      <input type="text" id="player-name-input" placeholder="플레이어 이름 (최대 6자)" maxlength="6">
+    </div>
 
-  <div class="boards">
-    <section class="board human" id="panel-human">
-      <h2><span class="player-dot"></span>당신</h2>
-      <table>
-        <tbody></tbody>
-      </table>
-      <div class="board-footer">
-        <div>상단 합계: <span class="upper-sum">0 / 63</span></div>
-        <div>보너스: <span class="bonus-val">0</span></div>
-        <div class="total-row">총점 <span class="total-val">0</span></div>
+    <div class="mode-cards">
+      <div class="card" id="btn-mode-single">
+        <h3>Single Mode</h3>
+        <p>혼자서 최고 점수에 도전하세요!</p>
+        <div class="stats-preview" id="preview-single">최고 점수: 0</div>
       </div>
-    </section>
-
-    <section class="board bot" id="panel-bot">
-      <h2><span class="player-dot"></span>AI</h2>
-      <table>
-        <tbody></tbody>
-      </table>
-      <div class="board-footer">
-        <div>상단 합계: <span class="upper-sum">0 / 63</span></div>
-        <div>보너스: <span class="bonus-val">0</span></div>
-        <div class="total-row">총점 <span class="total-val">0</span></div>
+      <div class="card" id="btn-mode-bot">
+        <h3>VS Bot Mode</h3>
+        <p>봇과 대결하세요!</p>
+        <div class="stats-preview" id="preview-bot">전적: 0승 0패</div>
       </div>
-    </section>
+    </div>
   </div>
 
-  <div id="game-over-banner" class="hidden"></div>
+  <div id="view-game" class="view-section hidden">
+    <header class="game-global-header">
+      <h2 id="game-mode-title">PLAYER vs. BOT</h2>
+      <div class="game-menu">
+        <button id="btn-home">홈</button>
+        <button id="btn-restart">재시작</button>
+        <button id="btn-rules-game">룰</button>
+      </div>
+    </header>
 
-  <footer>Optimal-strategy DP table precomputed offline &middot; runs entirely in your browser</footer>
+    <div class="status-bar">
+      <div id="round-line">라운드 1 / 12</div>
+    </div>
+
+    <div class="dice-panel">
+      <div id="dice-area"></div>
+      <button id="roll-btn">주사위 굴리기 (1/3)</button>
+    </div>
+
+    <div class="boards">
+      <section class="board human" id="panel-human">
+        <h2><span class="player-dot"></span><span id="display-player-name">당신</span></h2>
+        <div class="board-tables">
+          <table class="table-upper">
+            <tbody>
+              <tr data-cat="0"><td>에이스</td><td class="score-cell">-</td></tr>
+              <tr data-cat="1"><td>듀스</td><td class="score-cell">-</td></tr>
+              <tr data-cat="2"><td>트리플</td><td class="score-cell">-</td></tr>
+              <tr data-cat="3"><td>포카드</td><td class="score-cell">-</td></tr>
+              <tr data-cat="4"><td>파이브</td><td class="score-cell">-</td></tr>
+              <tr data-cat="5"><td>식스</td><td class="score-cell">-</td></tr>
+              <tr class="summary-row bonus-row"><td>+35</td><td class="score-cell"><span class="upper-sum">0 / 63</span><span class="bonus-status" style="margin-left: 10px;">(X)</span>
+  </td>
+</tr>            </tbody>
+          </table>
+          <table class="table-lower">
+            <tbody>
+              <tr data-cat="6"><td>초이스</td><td class="score-cell">-</td></tr>
+              <tr data-cat="7"><td>포카인드</td><td class="score-cell">-</td></tr>
+              <tr data-cat="8"><td>풀하우스</td><td class="score-cell">-</td></tr>
+              <tr data-cat="9"><td>스몰 스트레이트</td><td class="score-cell">-</td></tr>
+              <tr data-cat="10"><td>라지 스트레이트</td><td class="score-cell">-</td></tr>
+              <tr data-cat="11"><td>요트</td><td class="score-cell">-</td></tr>
+              <tr class="summary-row total-row"><td>총점</td><td class="score-cell total-val">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="board bot" id="panel-bot">
+        <h2><span class="player-dot"></span>BOT</h2>
+        <div class="board-tables">
+          <table class="table-upper">
+            <tbody>
+              <tr data-cat="0"><td>에이스</td><td class="score-cell">-</td></tr>
+              <tr data-cat="1"><td>듀스</td><td class="score-cell">-</td></tr>
+              <tr data-cat="2"><td>트리플</td><td class="score-cell">-</td></tr>
+              <tr data-cat="3"><td>포카드</td><td class="score-cell">-</td></tr>
+              <tr data-cat="4"><td>파이브</td><td class="score-cell">-</td></tr>
+              <tr data-cat="5"><td>식스</td><td class="score-cell">-</td></tr>
+              <tr class="summary-row"><td> +35 </td><td class="score-cell"><span class="upper-sum">0 / 63</span></td></tr>
+            </tbody>
+          </table>
+          <table class="table-lower">
+            <tbody>
+              <tr data-cat="6"><td>초이스</td><td class="score-cell">-</td></tr>
+              <tr data-cat="7"><td>포카인드</td><td class="score-cell">-</td></tr>
+              <tr data-cat="8"><td>풀하우스</td><td class="score-cell">-</td></tr>
+              <tr data-cat="9"><td>스몰 스트레이트</td><td class="score-cell">-</td></tr>
+              <tr data-cat="10"><td>라지 스트레이트</td><td class="score-cell">-</td></tr>
+              <tr data-cat="11"><td>요트</td><td class="score-cell">-</td></tr>
+              <tr class="summary-row total-row"><td>총점</td><td class="score-cell total-val">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      
+      <section class="board ranking hidden" id="panel-ranking">
+        <h2>🏆 Top 10 랭킹</h2>
+        <div class="ranking-content">랭킹 데이터가 없습니다.</div>
+      </section>
+    </div>
+
+    <div id="game-over-banner" class="hidden"></div>
+  </div>
+
+  <div id="modal-rules" class="modal hidden">
+  <div class="modal-content">
+    <h2>요트 다이스 룰 안내</h2>
+      <p>1. 각 턴마다 주사위를 최대 3번 굴릴 수 있습니다.</p>
+      <p>2. 주사위를 다시 굴릴 때마다 원하는 주사위를 홀드하고 나머지만 다시 굴릴 수 있습니다.</p>
+      <p>3. 12개의 족보 중 하나를 선택해 점수를 기록해야 하며, 한 번 기록한 족보는 다시 쓸 수 없습니다.</p>
+      <p>4. 에이스~식스 합계가 63점 이상이면 35점 보너스를 받습니다.</p>
+      <p>5. 에이스~식스는 각각 1~6 주사위의 눈 수를 전부 센 만큼 점수를 얻습니다.</p>
+      <p>6. 초이스는 나온 주사위의 눈을 전부 더한 만큼 점수를 얻습니다.</p>
+      <p>7. 포카인드는 같은 주사위가 4개 이상 나왔을 때 점수를 얻습니다.</p>
+      <p>8. 풀하우스는 같은 주사위가 3개와 2개로 나왔을 때 점수를 얻습니다.</p>
+      <p>9. 스몰 스트레이트는 4개의 연속된 주사위가 나왔을 때 15점을 얻습니다.</p>
+      <p>10. 라지 스트레이트는 5개의 연속된 주사위가 나왔을 때 30점을 얻습니다.</p>
+      <p>11. 요트는 같은 주사위가 5개 나왔을 때 50점을 얻습니다.</p>
+      <p>12. 봇전에서는 모든 족보의 등록이 끝난 후 더 점수가 높은 쪽이 승리합니다.</p>
+      <button id="btn-close-rules">닫기</button>
+    </div>
+  </div>
+
+  <footer>This game was developed as a web page creation assignment for KH ACADEMY </footer>
 </div>
 
 <script src="state_values.js"></script>
+<script src="ai_engine.js"></script>
 <script src="game.js"></script>
 </body>
 </html>
