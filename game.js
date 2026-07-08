@@ -332,14 +332,31 @@ function navigateToView(viewId, pushState = true) {
   }
 }
 
+function showNameError(msg) {
+  const errEl = el("#name-error");
+  const inputEl = el("#player-name-input");
+  errEl.textContent = msg;
+  errEl.classList.remove("hidden");
+  requestAnimationFrame(() => errEl.classList.add("show"));
+  inputEl.classList.add("input-invalid");
+}
+
+function clearNameError() {
+  const errEl = el("#name-error");
+  errEl.classList.remove("show");
+  el("#player-name-input").classList.remove("input-invalid");
+}
+
 function startGame(selectedMode) {
   const inputName = el("#player-name-input").value.trim();
   const nameRegex = /^[가-힣a-zA-Z0-9]{1,6}$/;
 
+  clearNameError(); // 이전 에러 메시지 초기화
+
   if (inputName === "") {
     game.playerName = "Player";
   } else if (!nameRegex.test(inputName)) {
-    alert("이름은 띄어쓰기 및 특수문자 없이 한글, 영문, 숫자 1~6자로 입력해주세요!");
+    showNameError("이름은 띄어쓰기 및 특수문자 없이 한글, 영문, 숫자 1~6자로 입력해주세요!");
     return;
   } else {
     game.playerName = inputName;
@@ -352,7 +369,7 @@ function startGame(selectedMode) {
     el("#game-mode-title").textContent = "SINGLE YACHT";
     el("#panel-bot").classList.add("hidden");
     el("#panel-ranking").classList.remove("hidden");
-    renderRanking(); 
+    renderRanking();
   } else {
     el("#game-mode-title").textContent = `${game.playerName.toUpperCase()} vs. BOT`;
     el("#panel-bot").classList.remove("hidden");
@@ -362,10 +379,10 @@ function startGame(selectedMode) {
   game.round = 1; game.turn = "human"; game.gameOver = false; game.busy = false;
   game.human = newPlayerState(); game.bot = newPlayerState();
   game.dice = [1, 1, 1, 1, 1]; game.held = [false, false, false, false, false]; game.rollsUsed = 0;
-  
+
   el("#game-over-banner").classList.add("hidden");
   renderUI();
-  navigateToView("view-game"); // 🎯 수정됨
+  navigateToView("view-game");
 }
 
 window.addEventListener("DOMContentLoaded", () => {

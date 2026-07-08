@@ -257,21 +257,90 @@ footer {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .die, .die--clickable:hover, .die--pulse { animation: none !important; transition: none !important; transform: none !important; }
+  .die, .die--clickable:hover, .die--pulse { 
+    animation: none !important;
+    transition: none !important;
+    transform: none !important; 
+  }
 }
 
 /* ---------- 뷰 및 모달 처리 ---------- */
-.view-section { width: 100%; animation: fadeIn 0.4s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.view-section { 
+  width: 100%; 
+  animation: fadeIn 0.4s ease; 
+}
+
+@keyframes fadeIn { 
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  } to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  } 
+}
 
 /* ---------- 메인 홈 화면 ---------- */
-.home-header { display: flex; justify-content: center; align-items: center; position: relative; margin-top: 40px; margin-bottom: 40px; }
-.home-header h1 { font-size: clamp(3rem, 8vw, 4.5rem); }
-.icon-btn { position: absolute; right: 0; background: var(--gold-bright); color: var(--ink); border: none; width: 36px; height: 36px; border-radius: 50%; font-weight: bold; cursor: pointer; }
+.home-header { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  position: relative; margin-top: 40px; 
+  margin-bottom: 40px; 
+}
 
-.player-input-area { text-align: center; margin-bottom: 30px; }
-#player-name-input { background: rgba(0,0,0,0.2); border: 1px solid var(--line); color: var(--cream); padding: 12px 20px; font-size: 1rem; border-radius: var(--radius); text-align: center; outline: none; width: 100%; max-width: 300px; }
+.home-header h1 { font-size: clamp(3rem, 8vw, 4.5rem); }
+
+.icon-btn { 
+  position: absolute; 
+  right: 0; 
+  background: var(--gold-bright); 
+  color: var(--ink); 
+  border: none; 
+  width: 36px; 
+  height: 36px; 
+  border-radius: 50%; 
+  font-weight: bold; 
+  cursor: pointer; 
+}
+
+.player-input-area { 
+  text-align: center; 
+  margin-bottom: 30px; 
+}
+
+#player-name-input { 
+  background: rgba(0,0,0,0.2); 
+  border: 1px solid var(--line); 
+  color: var(--cream); 
+  padding: 12px 20px; 
+  font-size: 1rem; 
+  border-radius: var(--radius); 
+  text-align: center; 
+  outline: none; 
+  width: 100%; 
+  max-width: 300px; }
+  
 #player-name-input:focus { border-color: var(--gold); }
+
+.input-error {
+  color: #e8a99c;
+  font-size: 0.85rem;
+  margin: 8px 0 0;
+  min-height: 1.2em;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.input-error.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#player-name-input.input-invalid {
+  border-color: var(--bot-red);
+}
 
 .mode-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 @media (max-width: 640px) { .mode-cards { grid-template-columns: 1fr; } }
