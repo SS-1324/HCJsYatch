@@ -257,7 +257,7 @@ async function botTurn() {
   }
 
   await sleep(TIMING.THINK); // 최종 족보 선택 전 고민
-  const decision = decideCategory(dice, game.bot.used, game.bot.upper);
+  const decision = decideCategory(dice, usedMask(game.bot), game.bot.upper);
   game.bot.scores[decision.cat] = decision.score;
   if (IS_UPPER[decision.cat]) game.bot.upper = decision.newUpper;
   
