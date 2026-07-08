@@ -11,7 +11,7 @@ const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 const TIMING = { ROLL_DISPLAY: 800, THINK: 300, SELECT_STEP: 400, TO_REROLL: 400, TURN_SWITCH: 600 };
 const el = (sel) => document.querySelector(sel);
 
-function newPlayerState() { return { used: 0, upper: 0, scores: new Array(N_CAT).fill(null) }; }
+function newPlayerState() { return { upper: 0, scores: new Array(N_CAT).fill(null) }; }
 
 const game = {
   round: 1, turn: "human", mode: "bot", playerName: "Player",
@@ -19,6 +19,13 @@ const game = {
   dice: [1, 1, 1, 1, 1], held: [false, false, false, false, false],
   rollsUsed: 0, gameOver: false, busy: false,
 };
+
+// scores 배열로부터 필요할 때마다 계산하는 비트마스크
+function usedMask(p) {
+  let m = 0;
+  p.scores.forEach((s, i) => { if (s !== null) m |= (1 << i); });
+  return m;
+}
 
 // 1. 로컬 스토리지
 const Storage = {
@@ -118,7 +125,7 @@ function renderScoreboard(playerKey, panelSel) {
   panel.querySelectorAll("[data-cat]").forEach(tr => {
     const c = parseInt(tr.dataset.cat, 10);
     const scoreTd = tr.querySelector(".score-cell");
-    const used = (p.used & (1 << c)) !== 0;
+    const used = p.scores[c] !== null;
 
     tr.className = ""; scoreTd.className = "score-cell";
     if (used) {
@@ -208,13 +215,12 @@ async function humanRoll() {
 
 function humanPickCategory(cat) {
   const p = game.human;
-  if (p.used & (1 << cat)) return;
+  if (p.scores[cat] !== null) return;
   
   const sc = categoryScore(cat, countsOf(game.dice), game.dice.reduce((a,b)=>a+b,0));
   p.scores[cat] = sc;
-  p.used |= (1 << cat);
+
   if (IS_UPPER[cat]) p.upper = Math.min(UPPER_CAP, p.upper + sc);
-  
   endHumanTurn();
 }
 
@@ -233,7 +239,7 @@ async function endHumanTurn() {
 
 async function botTurn() {
   game.busy = true; renderUI();
-  const { g0, g1 } = computeValueVectors(game.bot.used, game.bot.upper);
+  const { g0, g1 } = computeValueVectors(usedMask(game.bot), game.bot.upper);
 
   let dice = [rollDie(), rollDie(), rollDie(), rollDie(), rollDie()];
   game.held = [false, false, false, false, false];
@@ -253,7 +259,6 @@ async function botTurn() {
   await sleep(TIMING.THINK); // 최종 족보 선택 전 고민
   const decision = decideCategory(dice, game.bot.used, game.bot.upper);
   game.bot.scores[decision.cat] = decision.score;
-  game.bot.used |= (1 << decision.cat);
   if (IS_UPPER[decision.cat]) game.bot.upper = decision.newUpper;
   
   renderUI();
