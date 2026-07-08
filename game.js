@@ -71,8 +71,10 @@ const Storage = {
 
 function updateHomeStats() {
   const data = Storage.get();
-  const topScore = data.highScores.length > 0 ? data.highScores[0] : 0;
-  el("#preview-single").textContent = `최고 점수: ${topScore}점`;
+  const top = data.highScores.length > 0 ? data.highScores[0] : null;
+  el("#preview-single").textContent = top 
+    ? `최고 점수: ${top.name} ${top.score}점` 
+    : `최고 점수: 0점`;
   el("#preview-bot").textContent = `전적: ${data.wins}승 ${data.losses}패`;
 }
 
@@ -90,7 +92,7 @@ function renderRanking() {
   ).join("");
 }
 
-// 2. 점수 계산 유틸리티
+// 2. 점수 계산
 
 function totalScore(p) {
   const upper = p.scores.slice(0, 6).reduce((a, b) => a + (b || 0), 0);
