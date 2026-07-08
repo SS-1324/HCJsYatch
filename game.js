@@ -8,7 +8,7 @@ const IS_UPPER = [true, true, true, true, true, true, false, false, false, false
 const UPPER_CAP = 63, BONUS = 35; 
 
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-const TIMING = { ROLL_DISPLAY: 800, THINK: 300, SELECT_STEP: 400, TO_REROLL: 400, TURN_SWITCH: 600 };
+const TIMING = { ROLL_DISPLAY: 800, THINK: 700, SELECT_STEP: 400, TO_REROLL: 400, TURN_SWITCH: 600 };
 const el = (sel) => document.querySelector(sel);
 
 function newPlayerState() { return { upper: 0, scores: new Array(N_CAT).fill(null) }; }
@@ -18,6 +18,7 @@ const game = {
   human: newPlayerState(), bot: newPlayerState(),
   dice: [1, 1, 1, 1, 1], held: [false, false, false, false, false],
   rollsUsed: 0, gameOver: false, busy: false,
+  hasRolled: false,
 };
 
 // scores 배열로부터 필요할 때마다 계산하는 비트마스크
@@ -120,7 +121,8 @@ function renderScoreboard(playerKey, panelSel) {
   const p = game[playerKey];
   const panel = el(panelSel);
   const counts = countsOf(game.dice), sum = game.dice.reduce((a, b) => a + b, 0);
-  const canPick = playerKey === "human" && game.turn === "human" && !game.busy && game.rollsUsed > 0;
+  const canPreview = game.turn === playerKey && game.hasRolled && !game.busy;
+  const canClick = playerKey === "human" && canPreview;
 
   panel.querySelectorAll("[data-cat]").forEach(tr => {
     const c = parseInt(tr.dataset.cat, 10);
@@ -131,10 +133,10 @@ function renderScoreboard(playerKey, panelSel) {
     if (used) {
       scoreTd.textContent = p.scores[c];
       tr.classList.add("used");
-    } else if (canPick) {
+    } else if (canPreview) {
       scoreTd.textContent = categoryScore(c, counts, sum);
       scoreTd.classList.add("preview");
-      tr.classList.add("selectable");
+      if (canClick) tr.classList.add("selectable");
     } else {
       scoreTd.textContent = "-";
       scoreTd.classList.add("empty");
@@ -195,6 +197,7 @@ async function animateDiceRoll(keepPos, finalDice) {
     await sleep(80);
   }
   game.dice = finalDice.slice();
+  game.hasRolled = true;
   game.busy = false; renderUI();
 }
 
@@ -232,6 +235,7 @@ async function endHumanTurn() {
     finishRoundAndSwitch();
   } else {
     game.turn = "bot"; game.dice = [1, 1, 1, 1, 1]; game.rollsUsed = 0; game.busy = false;
+    game.hasRolled = false;
     renderUI();
     await botTurn();
   }
@@ -290,6 +294,7 @@ function finishRoundAndSwitch() {
   }
   game.turn = "human"; game.dice = [1, 1, 1, 1, 1]; game.held = [false, false, false, false, false];
   game.rollsUsed = 0; game.busy = false;
+  game.hasRolled = false;
   renderUI();
 }
 
@@ -379,6 +384,7 @@ function startGame(selectedMode) {
   game.round = 1; game.turn = "human"; game.gameOver = false; game.busy = false;
   game.human = newPlayerState(); game.bot = newPlayerState();
   game.dice = [1, 1, 1, 1, 1]; game.held = [false, false, false, false, false]; game.rollsUsed = 0;
+  game.hasRolled = false;
 
   el("#game-over-banner").classList.add("hidden");
   renderUI();
