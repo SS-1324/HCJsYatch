@@ -13,6 +13,39 @@ const el = (sel) => document.querySelector(sel);
 
 function newPlayerState() { return { upper: 0, scores: new Array(N_CAT).fill(null) }; }
 
+function buildBoardHTML() {
+  const upperRows = CATEGORY_NAMES.slice(0, 6).map((name, i) =>
+    `<tr data-cat="${i}"><td>${name}</td><td class="score-cell">-</td></tr>`
+  ).join("");
+
+  const lowerRows = CATEGORY_NAMES.slice(6).map((name, i) =>
+    `<tr data-cat="${i + 6}"><td>${name}</td><td class="score-cell">-</td></tr>`
+  ).join("");
+
+  return `
+    <table class="table-upper"><tbody>
+      ${upperRows}
+      <tr class="summary-row bonus-row">
+        <td>+35</td>
+        <td class="score-cell">
+          <span class="upper-sum">0 / ${UPPER_CAP}</span>
+          <span class="bonus-status" style="margin-left:10px;">(X)</span>
+        </td>
+      </tr>
+    </tbody></table>
+    <table class="table-lower"><tbody>
+      ${lowerRows}
+      <tr class="summary-row total-row"><td>총점</td><td class="score-cell total-val">0</td></tr>
+    </tbody></table>
+  `;
+}
+
+function initBoards() {
+  document.querySelectorAll("[data-board]").forEach(container => {
+    container.innerHTML = buildBoardHTML();
+  });
+}
+
 const game = {
   round: 1, turn: "human", mode: "bot", playerName: "Player",
   human: newPlayerState(), bot: newPlayerState(),
@@ -392,6 +425,7 @@ function startGame(selectedMode) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  initBoards();
   setupAIEngine();
   updateHomeStats(); 
   
