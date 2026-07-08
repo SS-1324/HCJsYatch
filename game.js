@@ -1,12 +1,9 @@
 "use strict";
 
-// 0. 기본 규칙 및 상태 변수
-const CATEGORY_KEYS = ["aces", "deuces", "threes", "fours", "fives", "sixes", "choice", "fourKind", "fullHouse", "smallStraight", "largeStraight", "yacht"];
-const CATEGORY_NAMES = ["에이스", "듀스", "트리플", "포카드", "파이브", "식스", "초이스", "포카인드", "풀하우스", "스몰 스트레이트", "라지 스트레이트", "요트"];
-const N_CAT = 12;
-const IS_UPPER = [true, true, true, true, true, true, false, false, false, false, false, false];
-const UPPER_CAP = 63, BONUS = 35; 
+import { CATEGORY_NAMES, N_CAT, IS_UPPER, UPPER_CAP, BONUS, rollDie, countsOf, categoryScore } from './rules.js';
+import { setupAIEngine, computeValueVectors, decideKeep, decideCategory, positionsToKeep } from './ai_engine.js';
 
+// 0. 기본 규칙 및 상태 변수
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 const TIMING = { ROLL_DISPLAY: 800, THINK: 700, SELECT_STEP: 400, TO_REROLL: 400, TURN_SWITCH: 600 };
 const el = (sel) => document.querySelector(sel);
@@ -86,40 +83,14 @@ function renderRanking() {
     container.innerHTML = "랭킹 데이터가 없습니다.<br>첫 게임을 플레이해보세요!";
     return;
   }
-  container.innerHTML = data.highScores.map((score, i) => 
+  container.innerHTML = data.highScores.map((entry, i) => 
     `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--line);">
-      <span>${i + 1}위</span> <span style="color:var(--gold-bright); font-weight:bold;">${score}점</span>
+      <span>${i + 1}. ${entry.name}</span> <span style="color:var(--gold-bright); font-weight:bold;">${entry.score}점</span>
     </div>`
   ).join("");
 }
 
 // 2. 점수 계산 유틸리티
-function rollDie() { return 1 + Math.floor(Math.random() * 6); }
-function countsOf(diceArr) {
-  const c = [0, 0, 0, 0, 0, 0, 0];
-  for (const v of diceArr) c[v]++;
-  return c;
-}
-
-function categoryScore(cat, counts, sum) {
-  if (cat < 6) return counts[cat + 1] * (cat + 1);
-  if (cat === 6) return sum; 
-  if (cat === 7) return counts.some(c => c >= 4) ? sum : 0;
-  if (cat === 8) {
-    const has3 = counts.includes(3), has2 = counts.includes(2), has5 = counts.includes(5);
-    return (has3 && has2) || has5 ? sum : 0;
-  }
-  if (cat === 9) {
-    const p = counts.map(c => c > 0);
-    return (p[1]&&p[2]&&p[3]&&p[4]) || (p[2]&&p[3]&&p[4]&&p[5]) || (p[3]&&p[4]&&p[5]&&p[6]) ? 15 : 0;
-  }
-  if (cat === 10) {
-    const p = counts.map(c => c > 0);
-    return (p[1]&&p[2]&&p[3]&&p[4]&&p[5]) || (p[2]&&p[3]&&p[4]&&p[5]&&p[6]) ? 30 : 0;
-  }
-  if (cat === 11) return counts.includes(5) ? 50 : 0;
-  return 0;
-}
 
 function totalScore(p) {
   const upper = p.scores.slice(0, 6).reduce((a, b) => a + (b || 0), 0);
@@ -339,9 +310,9 @@ function endGame() {
 
   if (game.mode === "single") {
     msg = `게임 종료! 최종 점수: ${h.total}점`;
-    data.highScores.push(h.total);
+    data.highScores.push({ name: game.playerName, score: h.total });
     data.highScores.sort((x, y) => y - x); 
-    data.highScores = data.highScores.slice(0, 10); 
+    data.highScores = data.highScores.slice(0, 6); 
     Storage.save(data);
     renderRanking(); 
   } else {

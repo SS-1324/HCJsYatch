@@ -1,8 +1,13 @@
 // ai_engine.js
 
 "use strict";
+import { N_CAT, IS_UPPER, UPPER_CAP, BONUS, categoryScore, countsOf } from './rules.js';
+import { YACHT_STATE_VALUES } from './state_values.js';
 
 // AI 두뇌 모듈 : 전략 연산 및 확률 계산 엔진
+
+import { N_CAT, IS_UPPER, UPPER_CAP, BONUS, categoryScore, countsOf } from './rules.js';
+import { YACHT_STATE_VALUES } from './state_values.js';
 
 const AI = {}; // 전역 AI 엔진 데이터 네임스페이스
 
@@ -173,3 +178,5 @@ function decideCategory(diceArr, mask, u) {
   }
   return { cat: bestCat, score: bestScore, bonus: bestBonus, newUpper: bestNewU };
 }
+
+export { setupAIEngine, computeValueVectors, decideKeep, decideCategory, positionsToKeep };
