@@ -2,9 +2,10 @@
 
 "use strict";
 
-/* 
-   AI 두뇌 모듈 : 전략 연산 및 확률 계산 엔진
-   */
+// AI 두뇌 모듈 : 전략 연산 및 확률 계산 엔진
+ 
+import { N_CAT, IS_UPPER, UPPER_CAP, BONUS, categoryScore, countsOf } from './game.js';
+export { setupAIEngine, computeValueVectors, decideKeep, decideCategory, positionsToKeep };
 
 const AI = {}; // 전역 AI 엔진 데이터 네임스페이스
 
